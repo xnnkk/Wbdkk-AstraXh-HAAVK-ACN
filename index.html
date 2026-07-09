@@ -1,361 +1,274 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ACN 客户端 - 正在跳转</title>
-  <link rel="icon" type="image/png" href="logo.png" />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BTR 公会 - 选择站点</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: "Microsoft YaHei", "PingFang SC", -apple-system, sans-serif;
-      background: #121212;
+      background-color: #121212;
       color: #e0e0e0;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       padding: 20px;
     }
-    .container {
-      max-width: 520px;
-      width: 100%;
-      text-align: center;
+    /* 顶部栏 */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 12px 0 22px 0;
     }
-    .logo {
-      font-size: 28px;
+    .topbar-site {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .topbar-site-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: none;
+    }
+    .topbar-site-name {
+      font-size: 24px;
+      color: #ffffff;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    /* 主容器 */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background-color: #1e1e1e;
+      padding: 30px;
+      border-radius: 12px;
+    }
+    .page-title {
+      font-size: 22px;
       font-weight: 700;
-      color: #64b5f6;
-      letter-spacing: 2px;
+      color: #ffffff;
       margin-bottom: 6px;
     }
-    .subtitle {
+    .page-subtitle {
       font-size: 13px;
-      color: #666;
-      margin-bottom: 32px;
-    }
-    /* 状态区域 */
-    .status-wrap {
+      color: #888;
       margin-bottom: 28px;
     }
-    .spinner {
-      width: 44px;
-      height: 44px;
-      border: 3px solid rgba(100,181,246,0.15);
-      border-top: 3px solid #64b5f6;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 16px;
+    /* 站点卡片网格 */
+    .site-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .status-text {
-      font-size: 14px;
-      color: #888;
-    }
-    .status-text.success { color: #4caf50; }
-    .status-text.error { color: #f44336; }
-    /* 隧道地址显示 */
-    .url-box {
-      background: #1e1e1e;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 14px 18px;
-      margin-bottom: 24px;
-      display: none;
-      word-break: break-all;
-    }
-    .url-box.show { display: block; }
-    .url-label {
-      font-size: 11px;
-      color: #555;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .url-value {
-      font-size: 13px;
-      color: #64b5f6;
-    }
-    /* 按钮组 */
-    .btn-group {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-    .btn {
-      display: inline-block;
-      padding: 12px 28px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
+    .site-card {
+      background-color: #2d2d2d;
+      border-radius: 10px;
+      padding: 22px 24px;
+      border-left: 4px solid #64b5f6;
       cursor: pointer;
+      transition: all 0.3s ease;
       text-decoration: none;
-      transition: all 0.25s;
-      border: 2px solid #444;
-      background: #1e1e1e;
-      color: #e0e0e0;
-      letter-spacing: 1px;
+      color: inherit;
+      display: block;
     }
-    .btn:hover {
-      border-color: #64b5f6;
-      background: #2d2d2d;
+    .site-card:hover {
+      background-color: #353535;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(100, 181, 246, 0.12);
     }
-    .btn-primary {
-      background: linear-gradient(135deg, #64b5f6, #42a5f5);
-      color: #0f0f0f;
-      border-color: #64b5f6;
+    .site-card-icon {
+      font-size: 36px;
+      margin-bottom: 14px;
     }
-    .btn-primary:hover {
-      box-shadow: 0 0 20px rgba(100,181,246,0.35);
-      background: linear-gradient(135deg, #64b5f6, #42a5f5);
-    }
-    /* 倒计时 */
-    .countdown {
-      font-size: 12px;
-      color: #555;
+    .site-card-title {
+      font-size: 17px;
+      font-weight: bold;
+      color: #ffffff;
       margin-bottom: 8px;
     }
-    .countdown.cancelled {
-      color: #64b5f6;
+    .site-card-desc {
+      font-size: 13px;
+      color: #aaa;
+      line-height: 1.6;
     }
-    /* 重试 */
-    .retry-btn {
-      display: none;
+    .site-card-url {
+      font-size: 11px;
+      color: #555;
+      margin-top: 14px;
+      word-break: break-all;
+    }
+    .site-card-btn {
+      display: inline-block;
       margin-top: 16px;
-      padding: 10px 24px;
-      background: #1e1e1e;
-      border: 2px solid #f44336;
-      color: #f44336;
+      padding: 8px 20px;
+      background: linear-gradient(135deg, #64b5f6, #42a5f5);
+      color: #0f0f0f;
+      border: none;
       border-radius: 8px;
       font-size: 13px;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.25s;
+      transition: all 0.3s;
+      letter-spacing: 1px;
     }
-    .retry-btn:hover {
-      background: #2d2d2d;
+    .site-card:hover .site-card-btn {
+      box-shadow: 0 0 16px rgba(100, 181, 246, 0.35);
     }
-    .retry-btn.show { display: inline-block; }
-    /* 页脚 */
+    /* 加载状态 */
+    .loading-wrap {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(100,181,246,0.15);
+      border-top: 4px solid #64b5f6;
+      border-radius: 50%;
+      animation: spin 0.9s cubic-bezier(.4,0,.2,1) infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: #888; font-size: 14px; }
+    .error-msg {
+      background-color: #2d2d2d;
+      border-left: 4px solid #f55;
+      border-radius: 10px;
+      padding: 18px 20px;
+      color: #f55;
+      font-size: 14px;
+      margin-top: 20px;
+      display: none;
+    }
+    /* 底部 */
     .footer {
-      margin-top: 36px;
-      font-size: 11px;
+      text-align: center;
+      padding: 28px 0 8px;
       color: #444;
+      font-size: 12px;
+      max-width: 1000px;
+      margin: 0 auto;
     }
   </style>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 </head>
 <body>
-  <div class="container">
-    <div class="logo">ACN 客户端</div>
-    <div class="subtitle">BTR Guild Official</div>
 
-    <!-- 状态 -->
-    <div class="status-wrap">
-      <div class="spinner" id="spinner"></div>
-      <div class="status-text" id="statusText">正在获取隧道地址...</div>
+  <!-- 顶部栏 -->
+  <div class="topbar">
+    <div class="topbar-site">
+      <img class="topbar-site-avatar" id="siteAvatar" src="" alt="Site Avatar">
+      <div class="topbar-site-name">BTR 公会</div>
     </div>
-
-    <!-- 隧道地址 -->
-    <div class="url-box" id="urlBox">
-      <div class="url-label">当前隧道地址</div>
-      <div class="url-value" id="urlValue"></div>
-    </div>
-
-    <!-- 按钮 -->
-    <div class="btn-group" id="btnGroup" style="display:none;">
-      <a class="btn btn-primary" id="btnMain" href="#">进入主站</a>
-      <a class="btn" id="btnDownload" href="#">文件下载</a>
-    </div>
-
-    <!-- 倒计时 -->
-    <div class="countdown" id="countdown" style="display:none;"></div>
-
-    <!-- 重试 -->
-    <button class="retry-btn" id="retryBtn" onclick="init()">重新获取</button>
-
-    <div class="footer">&copy; 2026 WBDKK-ACN. All rights reserved.</div>
   </div>
 
+  <!-- 主内容 -->
+  <div class="container">
+    <div class="page-title">选择站点</div>
+    <div class="page-subtitle">请选择你要访问的站点</div>
+
+    <!-- 加载中 -->
+    <div class="loading-wrap" id="loadingWrap">
+      <div class="spinner"></div>
+      <div class="loading-text">正在获取地址...</div>
+    </div>
+
+    <!-- 站点卡片 -->
+    <div class="site-grid" id="siteGrid" style="display:none;"></div>
+
+    <!-- 错误提示 -->
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+
+  <div class="footer">BTR Guild &copy; 2024</div>
+
   <script>
-    // ============================================================
-    // 配置
-    // ============================================================
-    var REPO = 'wbdkk/Wbdkk-AstraXh-HAAVK-ACN';
-    // 多源 URL 列表（按优先级排序）
-    // 1. 相对路径（同源，GitHub Pages，国内最稳定但可能有缓存延迟）
-    // 2. jsdelivr CDN（国内通常可访问，缓存约12小时）
-    // 3. raw.githubusercontent.com（最新但国内可能被墙）
-    var URL_SOURCES = [
-      'url.txt?t=' + Date.now(),
-      'https://cdn.jsdelivr.net/gh/' + REPO + '@main/url.txt?t=' + Date.now(),
-      'https://raw.githubusercontent.com/' + REPO + '/main/url.txt?t=' + Date.now()
+    // 版本检查（强制刷新缓存）
+    const CURRENT_VERSION = '5';
+    const STORED_VERSION = localStorage.getItem('redirect_page_version');
+    if (STORED_VERSION !== CURRENT_VERSION) {
+      localStorage.setItem('redirect_page_version', CURRENT_VERSION);
+      window.location.reload(true);
+    }
+
+    const loadingWrap = document.getElementById('loadingWrap');
+    const siteGrid     = document.getElementById('siteGrid');
+    const errorMsg     = document.getElementById('errorMsg');
+    const siteAvatar   = document.getElementById('siteAvatar');
+
+    // 站点配置（baseUrl 由 JS 动态填充）
+    const SITE_CONFIG = [
+      {
+        icon: '🏠',
+        title: '主站',
+        desc: '公告、每日须知、近况更新、危害报告等主要内容。',
+        path: ''
+      },
+      {
+        icon: '📥',
+        title: '文件下载',
+        desc: '下载公会相关文件、资源包、工具等。',
+        path: '/download'
+      }
     ];
 
-    var AUTO_REDIRECT_DELAY = 5; // 秒
-    var redirectTimer = null;
-    var countdownNum = AUTO_REDIRECT_DELAY;
-    var cancelled = false;
-
-    // ============================================================
-    // 兼容性工具：XMLHttpRequest GET（不依赖 fetch/async）
-    // ============================================================
-    function httpGet(url, onSuccess, onError) {
-      var xhr = new XMLHttpRequest();
-      xhr.timeout = 8000;
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            onSuccess(xhr.responseText.trim());
-          } else {
-            onError('HTTP ' + xhr.status);
-          }
-        }
-      };
-      xhr.ontimeout = function() { onError('timeout'); };
-      xhr.onerror = function() { onError('network error'); };
-      try {
-        xhr.open('GET', url, true);
-        xhr.send();
-      } catch (e) {
-        onError(e.message);
-      }
+    function showError(msg) {
+      loadingWrap.style.display = 'none';
+      siteGrid.style.display = 'none';
+      errorMsg.textContent = '加载失败：' + msg;
+      errorMsg.style.display = 'block';
     }
 
-    // ============================================================
-    // 多源尝试获取 URL
-    // ============================================================
-    function fetchTunnelUrl(callback) {
-      var index = 0;
-      var tried = 0;
-      var total = URL_SOURCES.length;
+    function renderSites(baseUrl) {
+      loadingWrap.style.display = 'none';
+      errorMsg.style.display = 'none';
+      siteGrid.style.display = 'grid';
+      siteGrid.innerHTML = '';
 
-      function tryNext() {
-        if (index >= total) {
-          callback(null, '所有源均无法获取地址');
-          return;
-        }
-        var src = URL_SOURCES[index];
-        var srcName = index === 0 ? '同源' : (index === 1 ? 'jsdelivr' : 'raw.githubusercontent');
-        index++;
+      // 设置站点头像（尝试获取主站头像）
+      const avatarUrl = baseUrl + '/api/avatar?t=' + Date.now();
+      siteAvatar.src = avatarUrl;
+      siteAvatar.onerror = () => { siteAvatar.style.display = 'none'; };
 
-        httpGet(src, function(text) {
-          if (text && text.indexOf('http') === 0) {
-            console.log('[redirect] 成功从 ' + srcName + ' 获取: ' + text);
-            callback(text, null);
-          } else {
-            console.log('[redirect] ' + srcName + ' 返回无效: ' + text);
-            tried++;
-            tryNext();
-          }
-        }, function(err) {
-          console.log('[redirect] ' + srcName + ' 失败: ' + err);
-          tried++;
-          tryNext();
-        });
-      }
-
-      tryNext();
-    }
-
-    // ============================================================
-    // 主逻辑
-    // ============================================================
-    function init() {
-      var spinner = document.getElementById('spinner');
-      var statusText = document.getElementById('statusText');
-      var urlBox = document.getElementById('urlBox');
-      var urlValue = document.getElementById('urlValue');
-      var btnGroup = document.getElementById('btnGroup');
-      var btnMain = document.getElementById('btnMain');
-      var btnDownload = document.getElementById('btnDownload');
-      var countdown = document.getElementById('countdown');
-      var retryBtn = document.getElementById('retryBtn');
-
-      // 重置 UI
-      spinner.style.display = 'block';
-      statusText.className = 'status-text';
-      statusText.textContent = '正在获取隧道地址...';
-      urlBox.classList.remove('show');
-      btnGroup.style.display = 'none';
-      countdown.style.display = 'none';
-      retryBtn.classList.remove('show');
-      cancelled = false;
-      countdownNum = AUTO_REDIRECT_DELAY;
-
-      fetchTunnelUrl(function(url, err) {
-        if (err) {
-          spinner.style.display = 'none';
-          statusText.className = 'status-text error';
-          statusText.textContent = '获取隧道地址失败';
-          retryBtn.classList.add('show');
-          return;
-        }
-
-        // 成功获取 URL
-        spinner.style.display = 'none';
-        statusText.className = 'status-text success';
-        statusText.textContent = '地址获取成功，即将跳转...';
-
-        // 显示隧道地址
-        urlValue.textContent = url;
-        urlBox.classList.add('show');
-
-        // 设置按钮链接（不用 target=_blank，直接跳转当前页）
-        var mainUrl = url.replace(/\/+$/, '');
-        var dlUrl = mainUrl + '/download/';
-        btnMain.href = mainUrl;
-        btnDownload.href = dlUrl;
-
-        // 显示按钮
-        btnGroup.style.display = 'flex';
-
-        // 倒计时自动跳转
-        countdown.style.display = 'block';
-        countdown.className = 'countdown';
-        countdown.textContent = countdownNum + ' 秒后自动跳转至主站...';
-
-        redirectTimer = setInterval(function() {
-          if (cancelled) return;
-          countdownNum--;
-          if (countdownNum <= 0) {
-            clearInterval(redirectTimer);
-            window.location.href = mainUrl;
-          } else {
-            countdown.textContent = countdownNum + ' 秒后自动跳转至主站...';
-          }
-        }, 1000);
-
-        // 点击按钮取消自动跳转
-        function cancelAutoRedirect() {
-          if (cancelled) return;
-          cancelled = true;
-          clearInterval(redirectTimer);
-          countdown.className = 'countdown cancelled';
-          countdown.textContent = '已取消自动跳转，请选择目标';
-        }
-        btnMain.onclick = cancelAutoRedirect;
-        btnDownload.onclick = cancelAutoRedirect;
+      SITE_CONFIG.forEach(site => {
+        const url = baseUrl.replace(/\/+$/, '') + site.path;
+        const card = document.createElement('a');
+        card.className = 'site-card';
+        card.href = url;
+        card.target = '_self';
+        card.innerHTML = `
+          <div class="site-card-icon">${site.icon}</div>
+          <div class="site-card-title">${site.title}</div>
+          <div class="site-card-desc">${site.desc}</div>
+          <div class="site-card-url">${url}</div>
+          <button class="site-card-btn">前往 →</button>
+        `;
+        siteGrid.appendChild(card);
       });
     }
 
-    // ============================================================
-    // 版本检查（强制刷新缓存）
-    // ============================================================
-    (function() {
-      var CURRENT_VERSION = '6';
-      try {
-        var stored = localStorage.getItem('redirect_page_version');
-        if (stored !== CURRENT_VERSION) {
-          localStorage.setItem('redirect_page_version', CURRENT_VERSION);
-        }
-      } catch (e) {}
-      init();
-    })();
+    // 获取最新地址并渲染
+    fetch('url.txt?t=' + Date.now(), { cache: 'no-store' })
+      .then(r => {
+        if (!r.ok) throw new Error('无法读取 url.txt（HTTP ' + r.status + '）');
+        return r.text();
+      })
+      .then(url => {
+        url = url.trim();
+        if (!url) throw new Error('url.txt 为空');
+        renderSites(url);
+      })
+      .catch(err => {
+        showError(err.message + '。请确保主站已上线，或联系管理员。');
+        console.error('加载失败：', err);
+      });
   </script>
 </body>
 </html>
