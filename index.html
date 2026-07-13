@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ACN客户端导向页 - 正在跳转</title>
+  <title>ACN客户端导向页 - 选择站点</title>
   <link rel="icon" type="image/png" href="logo.png" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
@@ -115,16 +115,7 @@
       box-shadow: 0 0 20px rgba(100,181,246,0.35);
       background: linear-gradient(135deg, #64b5f6, #42a5f5);
     }
-    /* 倒计时 */
-    .countdown {
-      font-size: 12px;
-      color: #555;
-      margin-bottom: 8px;
-    }
-    .countdown.cancelled {
-      color: #64b5f6;
-    }
-    /* 重试 */
+    /* 页脚 */
     .retry-btn {
       display: none;
       margin-top: 16px;
@@ -152,7 +143,7 @@
 <body>
   <div class="container">
     <div class="logo">ACN客户端导向页</div>
-    <div class="subtitle">Official Redirect Page</div>
+    <div class="subtitle">请选择要访问的站点</div>
 
     <!-- 状态 -->
     <div class="status-wrap">
@@ -171,9 +162,6 @@
       <a class="btn btn-primary" id="btnMain" href="#">进入主站</a>
       <a class="btn" id="btnDownload" href="#">文件下载</a>
     </div>
-
-    <!-- 倒计时 -->
-    <div class="countdown" id="countdown" style="display:none;"></div>
 
     <!-- 重试 -->
     <button class="retry-btn" id="retryBtn" onclick="init()">重新获取</button>
@@ -195,11 +183,6 @@
       'https://cdn.jsdelivr.net/gh/' + REPO + '@main/url.txt?t=' + Date.now(),
       'https://raw.githubusercontent.com/' + REPO + '/main/url.txt?t=' + Date.now()
     ];
-
-    var AUTO_REDIRECT_DELAY = 5; // 秒
-    var redirectTimer = null;
-    var countdownNum = AUTO_REDIRECT_DELAY;
-    var cancelled = false;
 
     // ============================================================
     // 兼容性工具：XMLHttpRequest GET（不依赖 fetch/async）
@@ -273,7 +256,6 @@
       var btnGroup = document.getElementById('btnGroup');
       var btnMain = document.getElementById('btnMain');
       var btnDownload = document.getElementById('btnDownload');
-      var countdown = document.getElementById('countdown');
       var retryBtn = document.getElementById('retryBtn');
 
       // 重置 UI
@@ -282,10 +264,7 @@
       statusText.textContent = '正在获取隧道地址...';
       urlBox.classList.remove('show');
       btnGroup.style.display = 'none';
-      countdown.style.display = 'none';
       retryBtn.classList.remove('show');
-      cancelled = false;
-      countdownNum = AUTO_REDIRECT_DELAY;
 
       fetchTunnelUrl(function(url, err) {
         if (err) {
@@ -299,13 +278,13 @@
         // 成功获取 URL
         spinner.style.display = 'none';
         statusText.className = 'status-text success';
-        statusText.textContent = '地址获取成功，即将跳转...';
+        statusText.textContent = '地址获取成功，请选择要访问的站点';
 
         // 显示隧道地址
         urlValue.textContent = url;
         urlBox.classList.add('show');
 
-        // 设置按钮链接（不用 target=_blank，直接跳转当前页）
+        // 设置按钮链接（直接跳转当前页）
         var mainUrl = url.replace(/\/+$/, '');
         var dlUrl = mainUrl + '/download/';
         btnMain.href = mainUrl;
@@ -313,33 +292,6 @@
 
         // 显示按钮
         btnGroup.style.display = 'flex';
-
-        // 倒计时自动跳转
-        countdown.style.display = 'block';
-        countdown.className = 'countdown';
-        countdown.textContent = countdownNum + ' 秒后自动跳转至主站...';
-
-        redirectTimer = setInterval(function() {
-          if (cancelled) return;
-          countdownNum--;
-          if (countdownNum <= 0) {
-            clearInterval(redirectTimer);
-            window.location.href = mainUrl;
-          } else {
-            countdown.textContent = countdownNum + ' 秒后自动跳转至主站...';
-          }
-        }, 1000);
-
-        // 点击按钮取消自动跳转
-        function cancelAutoRedirect() {
-          if (cancelled) return;
-          cancelled = true;
-          clearInterval(redirectTimer);
-          countdown.className = 'countdown cancelled';
-          countdown.textContent = '已取消自动跳转，请选择目标';
-        }
-        btnMain.onclick = cancelAutoRedirect;
-        btnDownload.onclick = cancelAutoRedirect;
       });
     }
 
@@ -347,7 +299,7 @@
     // 版本检查（强制刷新缓存）
     // ============================================================
     (function() {
-      var CURRENT_VERSION = '6';
+      var CURRENT_VERSION = '7';
       try {
         var stored = localStorage.getItem('redirect_page_version');
         if (stored !== CURRENT_VERSION) {
