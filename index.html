@@ -396,11 +396,10 @@
 
         // 成功获取 URL
         statusBar.className = 'status-bar success';
-        statusBar.innerHTML = '<span>地址获取成功，请选择要访问的站点</span>';
+        statusBar.innerHTML = '';
 
-        // 显示隧道地址
-        urlValue.textContent = url;
-        urlInfo.style.display = 'block';
+        // 不显示隧道地址
+        urlInfo.style.display = 'none';
 
         // 设置链接
         var mainUrl = url.replace(/\/+$/, '');
