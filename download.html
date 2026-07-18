@@ -104,11 +104,11 @@
   <script>
     var REPO = 'xnnkk/Wbdkk-AstraXh-HAAVK-ACN';
     var URL_SOURCES = [
-      'url.txt?t=' + Date.now(),
-      'https://cdn.jsdelivr.net/gh/' + REPO + '@main/url.txt?t=' + Date.now(),
-      'https://raw.githubusercontent.com/' + REPO + '/main/url.txt?t=' + Date.now()
+      'url-download.txt?t=' + Date.now(),
+      'https://cdn.jsdelivr.net/gh/' + REPO + '@main/url-download.txt?t=' + Date.now(),
+      'https://raw.githubusercontent.com/' + REPO + '/main/url-download.txt?t=' + Date.now()
     ];
-    var TARGET_PATH = '/download/';
+    var TARGET_PATH = '';
 
     function httpGet(url, onSuccess, onError) {
       var xhr = new XMLHttpRequest();
@@ -170,7 +170,7 @@
     }
 
     (function() {
-      var CURRENT_VERSION = '10';
+      var CURRENT_VERSION = '20';
       try {
         var stored = localStorage.getItem('redirect_download_version');
         if (stored !== CURRENT_VERSION) {
