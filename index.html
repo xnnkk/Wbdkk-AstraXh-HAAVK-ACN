@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ACN 客户端 - 选择站点</title>
+  <title>ACN 下载中心 - 跳转中</title>
   <link rel="icon" type="image/png" href="logo.png" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
@@ -11,18 +11,13 @@
   <style>
     :root {
       --bg: #1a1a22;
-      --bg-card: #242430;
       --text-title: #ffffff;
       --text-dim: #71717a;
-      --text-body: #a1a1aa;
       --accent: #7dd3fc;
       --accent-2: #a78bfa;
       --accent-dim: rgba(125,211,252,0.12);
-      --accent-2-dim: rgba(167,139,250,0.12);
       --danger: #fca5a5;
       --success: #86efac;
-      --radius: 14px;
-      --transition: 0.25s ease;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -30,18 +25,12 @@
       background: var(--bg);
       background-image: radial-gradient(ellipse at top, rgba(125,211,252,0.06) 0%, transparent 50%),
                         radial-gradient(ellipse at bottom, rgba(167,139,250,0.06) 0%, transparent 50%);
-      color: var(--text-body);
+      color: var(--text-dim);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-    }
-    .container {
-      width: 100%;
-      max-width: 520px;
-      text-align: center;
     }
     .logo {
       width: 64px; height: 64px;
@@ -53,7 +42,7 @@
       font-size: 34px;
       font-weight: 700;
       color: var(--bg);
-      margin: 0 auto 20px;
+      margin-bottom: 20px;
       box-shadow: 0 8px 32px rgba(125,211,252,0.2);
     }
     .title {
@@ -66,142 +55,34 @@
     .subtitle {
       font-size: 14px;
       color: var(--text-dim);
-      margin-bottom: 36px;
+      margin-bottom: 32px;
     }
-    .card-group {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .site-card {
+    .status {
+      font-size: 14px;
+      color: var(--text-dim);
       display: flex;
       align-items: center;
-      gap: 16px;
-      padding: 20px 22px;
-      background: var(--bg-card);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: all var(--transition);
-      text-align: left;
-      text-decoration: none;
-      color: inherit;
-      position: relative;
-      overflow: hidden;
+      gap: 10px;
     }
-    .site-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      transition: opacity var(--transition);
-      pointer-events: none;
-    }
-    .site-card.main::before {
-      background: linear-gradient(135deg, var(--accent-dim), transparent);
-    }
-    .site-card.download::before {
-      background: linear-gradient(135deg, var(--accent-2-dim), transparent);
-    }
-    .site-card:hover::before { opacity: 1; }
-    .site-card:hover {
-      border-color: rgba(255,255,255,0.15);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-    }
-    .site-card.main:hover { border-color: rgba(125,211,252,0.4); }
-    .site-card.download:hover { border-color: rgba(167,139,250,0.4); }
-    .site-card:active { transform: translateY(0); }
-    .site-card.loading {
-      pointer-events: none;
-      opacity: 0.7;
-    }
-    .card-icon {
-      width: 48px; height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      flex-shrink: 0;
-      position: relative;
-      z-index: 1;
-    }
-    .site-card.main .card-icon {
-      background: var(--accent-dim);
-      color: var(--accent);
-    }
-    .site-card.download .card-icon {
-      background: var(--accent-2-dim);
-      color: var(--accent-2);
-    }
-    .card-body {
-      flex: 1;
-      position: relative;
-      z-index: 1;
-    }
-    .card-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-title);
-      margin-bottom: 3px;
-    }
-    .card-desc {
-      font-size: 13px;
-      color: var(--text-dim);
-    }
-    .card-arrow {
-      color: var(--text-dim);
-      font-size: 20px;
-      transition: all var(--transition);
-      position: relative;
-      z-index: 1;
-    }
-    .site-card:hover .card-arrow {
-      transform: translateX(4px);
-      color: var(--text-body);
-    }
-    .site-card.main:hover .card-arrow { color: var(--accent); }
-    .site-card.download:hover .card-arrow { color: var(--accent-2); }
-
-    /* Loading spinner inside card */
-    .card-spinner {
-      display: none;
-      width: 20px; height: 20px;
-      border: 2px solid rgba(255,255,255,0.15);
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid var(--accent-dim);
       border-top: 2px solid var(--accent);
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
-      position: relative;
-      z-index: 1;
     }
-    .site-card.loading .card-arrow { display: none; }
-    .site-card.loading .card-spinner { display: block; }
-    .site-card.download.loading .card-spinner { border-top-color: var(--accent-2); }
-
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Status message */
-    .status-msg {
-      margin-top: 24px;
-      font-size: 13px;
-      color: var(--text-dim);
-      min-height: 20px;
-      transition: color var(--transition);
-    }
-    .status-msg.error { color: var(--danger); }
-    .status-msg.success { color: var(--success); }
-
+    .status.error { color: var(--danger); }
+    .status.success { color: var(--success); }
     .retry-link {
       display: none;
-      margin-top: 8px;
+      margin-top: 16px;
       color: var(--accent);
-      font-size: 13px;
+      font-size: 14px;
       cursor: pointer;
       text-decoration: underline;
     }
     .retry-link.show { display: inline-block; }
-
     .footer {
       position: fixed;
       bottom: 0;
@@ -214,41 +95,28 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="logo">A</div>
-    <div class="title">ACN 客户端</div>
-    <div class="subtitle">请选择要访问的站点</div>
-
-    <div class="card-group">
-      <a class="site-card main" id="mainCard" onclick="goToSite('main')">
-        <div class="card-icon">🏠</div>
-        <div class="card-body">
-          <div class="card-title">主站</div>
-          <div class="card-desc">公告 · 近况 · 用户中心 · 服务器报告</div>
-        </div>
-        <div class="card-spinner"></div>
-        <div class="card-arrow">→</div>
-      </a>
-
-      <a class="site-card download" id="downloadCard" onclick="goToSite('download')">
-        <div class="card-icon">📦</div>
-        <div class="card-body">
-          <div class="card-title">下载中心</div>
-          <div class="card-desc">口令码兑换 · 文件下载</div>
-        </div>
-        <div class="card-spinner"></div>
-        <div class="card-arrow">→</div>
-      </a>
-    </div>
-
-    <div class="status-msg" id="statusMsg"></div>
-    <div class="retry-link" id="retryLink" onclick="clearError()">返回选择</div>
+  <div class="logo">A</div>
+  <div class="title">ACN 下载中心</div>
+  <div class="subtitle">口令码兑换 · 文件下载</div>
+  <div class="status" id="statusMsg">
+    <div class="spinner" id="spinner"></div>
+    <span>正在连接服务器...</span>
   </div>
-
-  <div class="footer">&copy; 2026 ACN 客户端 All rights reserved.<br>本网站所有权归 忘本的可可 所有</div>
+  <div class="retry-link" id="retryLink" onclick="retry()">重试</div>
+  <div class="footer">&copy; 2026 ACN 下载中心 All rights reserved.<br>本网站所有权归 忘本的可可 所有</div>
 
   <script>
     var REPO = 'xnnkk/Wbdkk-AstraXh-HAAVK-ACN';
+
+    function setStatus(text, type) {
+      var el = document.getElementById('statusMsg');
+      var sp = document.getElementById('spinner');
+      el.className = 'status' + (type ? ' ' + type : '');
+      el.innerHTML = (type ? '' : '<div class="spinner" id="spinner"></div>') + '<span>' + text + '</span>';
+      var retry = document.getElementById('retryLink');
+      if (type === 'error') retry.classList.add('show');
+      else retry.classList.remove('show');
+    }
 
     function httpGet(url, onSuccess, onError) {
       var xhr = new XMLHttpRequest();
@@ -268,23 +136,24 @@
       catch (e) { onError(e.message); }
     }
 
-    function fetchTunnelUrl(urlFile, callback) {
+    function fetchTunnelUrl() {
       var sources = [
-        urlFile + '?t=' + Date.now(),
-        'https://cdn.jsdelivr.net/gh/' + REPO + '@main/' + urlFile + '?t=' + Date.now(),
-        'https://raw.githubusercontent.com/' + REPO + '/main/' + urlFile + '?t=' + Date.now()
+        'url.txt?t=' + Date.now(),
+        'https://cdn.jsdelivr.net/gh/' + REPO + '@main/url.txt?t=' + Date.now(),
+        'https://raw.githubusercontent.com/' + REPO + '/main/url.txt?t=' + Date.now()
       ];
       var index = 0;
       function tryNext() {
         if (index >= sources.length) {
-          callback(null, 'failed');
+          setStatus('⚠ 服务器暂时无法连接，请稍后重试', 'error');
           return;
         }
         var src = sources[index];
         index++;
         httpGet(src, function(text) {
           if (text && text.indexOf('http') === 0) {
-            callback(text, null);
+            setStatus('✓ 连接成功，正在跳转...', 'success');
+            window.location.href = text.replace(/\/+$/, '');
           } else {
             tryNext();
           }
@@ -293,56 +162,16 @@
       tryNext();
     }
 
-    function goToSite(type) {
-      var cardId = type === 'main' ? 'mainCard' : 'downloadCard';
-      var otherId = type === 'main' ? 'downloadCard' : 'mainCard';
-      var urlFile = type === 'main' ? 'url.txt' : 'url-download.txt';
-      var siteName = type === 'main' ? '主站' : '下载中心';
-      var statusMsg = document.getElementById('statusMsg');
-      var retryLink = document.getElementById('retryLink');
-
-      var card = document.getElementById(cardId);
-      var otherCard = document.getElementById(otherId);
-      card.classList.add('loading');
-      otherCard.style.opacity = '0.4';
-      otherCard.style.pointerEvents = 'none';
-
-      statusMsg.className = 'status-msg';
-      statusMsg.textContent = '正在连接' + siteName + '...';
-      retryLink.classList.remove('show');
-
-      fetchTunnelUrl(urlFile, function(url, err) {
-        if (err) {
-          card.classList.remove('loading');
-          otherCard.style.opacity = '';
-          otherCard.style.pointerEvents = '';
-          statusMsg.className = 'status-msg error';
-          statusMsg.textContent = '⚠ ' + siteName + '暂时无法连接，请稍后重试';
-          retryLink.classList.add('show');
-          return;
-        }
-        statusMsg.className = 'status-msg success';
-        statusMsg.textContent = '✓ 连接成功，正在跳转到' + siteName + '...';
-        window.location.href = url.replace(/\/+$/, '');
-      });
+    function retry() {
+      setStatus('正在连接服务器...', '');
+      fetchTunnelUrl();
     }
 
-    function clearError() {
-      var statusMsg = document.getElementById('statusMsg');
-      var retryLink = document.getElementById('retryLink');
-      statusMsg.className = 'status-msg';
-      statusMsg.textContent = '';
-      retryLink.classList.remove('show');
-      document.getElementById('mainCard').classList.remove('loading');
-      document.getElementById('downloadCard').classList.remove('loading');
-      document.getElementById('mainCard').style.opacity = '';
-      document.getElementById('downloadCard').style.opacity = '';
-      document.getElementById('mainCard').style.pointerEvents = '';
-      document.getElementById('downloadCard').style.pointerEvents = '';
-    }
+    // Auto-start
+    fetchTunnelUrl();
 
     (function() {
-      var CURRENT_VERSION = '21';
+      var CURRENT_VERSION = '30';
       try {
         var stored = localStorage.getItem('redirect_portal_version');
         if (stored !== CURRENT_VERSION) {
