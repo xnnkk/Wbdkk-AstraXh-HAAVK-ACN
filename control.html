@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACN 控制面板</title>
+  <link rel="icon" type="image/png" href="logo.png" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <style>
+    :root {
+      --bg: #1a1a22;
+      --text-title: #ffffff;
+      --text-dim: #71717a;
+      --text-body: #a1a1aa;
+      --accent: #7dd3fc;
+      --accent-2: #a78bfa;
+      --accent-dim: rgba(125,211,252,0.12);
+      --danger: #fca5a5;
+      --danger-dim: rgba(252,165,165,0.1);
+      --success: #86efac;
+      --success-dim: rgba(134,239,172,0.1);
+      --warn: #fbbf24;
+      --card-bg: rgba(255,255,255,0.03);
+      --card-border: rgba(255,255,255,0.06);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      background-image: radial-gradient(ellipse at top, rgba(125,211,252,0.06) 0%, transparent 50%),
+                        radial-gradient(ellipse at bottom, rgba(167,139,250,0.06) 0%, transparent 50%);
+      color: var(--text-dim);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .logo {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 700; color: var(--bg);
+      margin-bottom: 16px;
+      box-shadow: 0 8px 32px rgba(125,211,252,0.2);
+    }
+    .title { font-size: 20px; font-weight: 700; color: var(--text-title); letter-spacing: 1px; margin-bottom: 4px; }
+    .subtitle { font-size: 13px; color: var(--text-dim); margin-bottom: 28px; }
+
+    .status-card {
+      width: 100%; max-width: 420px;
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 24px; margin-bottom: 16px;
+    }
+    .status-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .status-label { font-size: 14px; color: var(--text-dim); }
+    .status-badge { font-size: 13px; padding: 4px 14px; border-radius: 20px; font-weight: 600; }
+    .badge-on { background: var(--success-dim); color: var(--success); border: 1px solid rgba(134,239,172,0.2); }
+    .badge-off { background: var(--danger-dim); color: var(--danger); border: 1px solid rgba(252,165,165,0.2); }
+    .badge-loading { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--card-border); }
+    .status-detail { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+    .status-detail span { color: var(--text-body); }
+
+    .control-panel { width: 100%; max-width: 420px; }
+    .input-group { margin-bottom: 14px; }
+    .input-group label { display: block; font-size: 13px; color: var(--text-dim); margin-bottom: 6px; }
+    .form-input {
+      width: 100%; padding: 10px 14px; border-radius: 10px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--card-border);
+      color: var(--text-title); font-size: 14px; font-family: inherit; outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .form-input::placeholder { color: var(--text-dim); }
+    .btn-row { display: flex; gap: 10px; margin-top: 18px; }
+    .btn {
+      flex: 1; padding: 12px; border-radius: 10px; border: none;
+      font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit;
+    }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-on { background: var(--success-dim); color: var(--success); border: 1px solid rgba(134,239,172,0.2); }
+    .btn-on:not(:disabled):hover { background: rgba(134,239,172,0.15); transform: translateY(-1px); }
+    .btn-off { background: var(--danger-dim); color: var(--danger); border: 1px solid rgba(252,165,165,0.2); }
+    .btn-off:not(:disabled):hover { background: rgba(252,165,165,0.15); transform: translateY(-1px); }
+    .btn-refresh { background: rgba(255,255,255,0.04); color: var(--text-body); border: 1px solid var(--card-border); width: 100%; margin-top: 10px; }
+    .btn-refresh:hover { background: rgba(255,255,255,0.07); }
+
+    .lock-screen { width: 100%; max-width: 420px; text-align: center; }
+    .lock-icon { font-size: 40px; margin-bottom: 12px; }
+    .lock-title { font-size: 16px; color: var(--text-title); margin-bottom: 8px; }
+    .lock-hint { font-size: 12px; color: var(--text-dim); margin-bottom: 20px; line-height: 1.6; }
+
+    .toast {
+      position: fixed; top: 20px; left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500;
+      z-index: 999; transition: transform 0.3s ease; max-width: 90%;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { background: var(--success-dim); color: var(--success); border: 1px solid rgba(134,239,172,0.2); }
+    .toast.error { background: var(--danger-dim); color: var(--danger); border: 1px solid rgba(252,165,165,0.2); }
+
+    .mini-spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(125,211,252,0.2); border-top: 2px solid var(--accent);
+      border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 12px; color: var(--text-dim); padding: 12px; }
+    .link-back { color: var(--accent); text-decoration: none; font-size: 13px; margin-top: 16px; display: inline-block; }
+    .link-back:hover { text-decoration: underline; }
+    .token-hint { font-size: 11px; color: var(--text-dim); margin-top: 8px; line-height: 1.5; }
+    .token-hint a { color: var(--accent); }
+    .btn-logout { font-size: 12px; color: var(--text-dim); background: none; border: none; cursor: pointer; margin-top: 12px; text-decoration: underline; }
+    .btn-logout:hover { color: var(--danger); }
+  </style>
+</head>
+<body>
+
+  <!-- ===== 锁屏：输入 Token ===== -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-icon">🔑</div>
+    <div class="lock-title">ACN 控制面板</div>
+    <div class="lock-hint">请输入 GitHub Token 进行身份验证<br>Token 仅保存在本浏览器中</div>
+    <div class="input-group">
+      <input type="password" class="form-input" id="tokenInput" placeholder="ghp_..." onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn btn-refresh" onclick="doLogin()" style="margin-top:8px;color:var(--accent);border-color:rgba(125,211,252,0.2)">验证并登录</button>
+    <div class="token-hint">
+      Token 需要对仓库 <span style="color:var(--text-body)">Wbdkk-AstraXh-HAAVK-ACN</span> 的 contents 读写权限<br>
+      <a href="https://github.com/settings/tokens/new?scopes=repo&description=ACN%E6%8E%A7%E5%88%B6%E9%9D%A2%E6%9D%BF" target="_blank">点此创建 Token</a>
+    </div>
+  </div>
+
+  <!-- ===== 主面板 ===== -->
+  <div id="mainPanel" style="display:none;flex-direction:column;align-items:center">
+    <div class="logo">A</div>
+    <div class="title">ACN 控制面板</div>
+    <div class="subtitle">网站开关管理</div>
+
+    <div class="status-card">
+      <div class="status-row">
+        <span class="status-label">当前状态</span>
+        <span class="status-badge badge-loading" id="statusBadge"><span class="mini-spinner"></span> 加载中</span>
+      </div>
+      <div class="status-detail" id="statusDetail">正在获取...</div>
+    </div>
+
+    <div class="control-panel">
+      <div class="input-group">
+        <label>维护公告（关闭时显示给用户）</label>
+        <input type="text" class="form-input" id="msgInput" placeholder="如：维护中，预计2小时后恢复">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-on" id="btnOn" onclick="setSwitch(true)">开启网站</button>
+        <button class="btn btn-off" id="btnOff" onclick="setSwitch(false)">关闭网站</button>
+      </div>
+      <button class="btn btn-refresh" onclick="loadStatus()">刷新状态</button>
+      <button class="btn-logout" onclick="doLogout()">退出登录 / 更换 Token</button>
+    </div>
+
+    <a class="link-back" href="/">← 返回主页</a>
+  </div>
+
+  <div class="footer">&copy; 2026 ACN 下载中心</div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    var REPO = 'xnnkk/Wbdkk-AstraXh-HAAVK-ACN';
+    var STORAGE_KEY = 'acn_control_token';
+
+    function toast(msg, type) {
+      var el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = 'toast show ' + (type || '');
+      setTimeout(function() { el.className = 'toast'; }, 3000);
+    }
+
+    function getToken() { return localStorage.getItem(STORAGE_KEY) || ''; }
+    function setToken(t) { localStorage.setItem(STORAGE_KEY, t); }
+    function clearToken() { localStorage.removeItem(STORAGE_KEY); }
+
+    function apiRequest(method, path, body) {
+      var token = getToken();
+      return fetch('https://api.github.com/repos/' + REPO + '/contents/' + path, {
+        method: method,
+        headers: {
+          'Authorization': 'token ' + token,
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'ACN-Control-Panel',
+          'Content-Type': 'application/json'
+        },
+        body: body ? JSON.stringify(body) : undefined
+      });
+    }
+
+    function encodeContent(text) {
+      return btoa(unescape(encodeURIComponent(text)));
+    }
+    function decodeContent(b64) {
+      return decodeURIComponent(escape(atob(b64.replace(/\n/g, ''))));
+    }
+
+    // ===== 登录 =====
+    function doLogin() {
+      var token = document.getElementById('tokenInput').value.trim();
+      if (!token) { toast('请输入 Token', 'error'); return; }
+
+      // 验证 Token：尝试读取 switch.json
+      setToken(token);
+      fetch('https://api.github.com/repos/' + REPO + '/contents/switch.json', {
+        headers: {
+          'Authorization': 'token ' + token,
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'ACN-Control-Panel'
+        }
+      }).then(function(r) {
+        if (r.ok || r.status === 404) {
+          // Token 有效（404 表示文件不存在但 Token 有效）
+          showMainPanel();
+        } else if (r.status === 401) {
+          clearToken();
+          toast('Token 无效，请检查', 'error');
+        } else {
+          showMainPanel(); // 其他错误也先进去试试
+        }
+      }).catch(function() {
+        clearToken();
+        toast('网络错误，请重试', 'error');
+      });
+    }
+
+    function doLogout() {
+      clearToken();
+      document.getElementById('mainPanel').style.display = 'none';
+      document.getElementById('lockScreen').style.display = 'block';
+      document.getElementById('tokenInput').value = '';
+      document.getElementById('tokenInput').focus();
+    }
+
+    function showMainPanel() {
+      document.getElementById('lockScreen').style.display = 'none';
+      document.getElementById('mainPanel').style.display = 'flex';
+      loadStatus();
+    }
+
+    // ===== 读取状态 =====
+    function loadStatus() {
+      var badge = document.getElementById('statusBadge');
+      var detail = document.getElementById('statusDetail');
+      badge.className = 'status-badge badge-loading';
+      badge.innerHTML = '<span class="mini-spinner"></span> 加载中';
+      detail.textContent = '正在获取...';
+
+      apiRequest('GET', 'switch.json').then(function(r) {
+        if (r.ok) {
+          return r.json().then(function(data) {
+            var config = JSON.parse(decodeContent(data.content));
+            updateUI(config, data.sha);
+          });
+        } else if (r.status === 404) {
+          // switch.json 不存在，默认开启
+          updateUI({ enabled: true, message: '' }, null);
+        } else if (r.status === 401) {
+          badge.className = 'status-badge badge-off';
+          badge.textContent = 'Token 失效';
+          detail.textContent = 'Token 已失效，请退出重新登录';
+          clearToken();
+        } else {
+          throw new Error('HTTP ' + r.status);
+        }
+      }).catch(function() {
+        badge.className = 'status-badge badge-off';
+        badge.textContent = '获取失败';
+        detail.textContent = '无法连接 GitHub，请稍后重试';
+      });
+    }
+
+    function updateUI(config, sha) {
+      var badge = document.getElementById('statusBadge');
+      var detail = document.getElementById('statusDetail');
+      var btnOn = document.getElementById('btnOn');
+      var btnOff = document.getElementById('btnOff');
+      var msgInput = document.getElementById('msgInput');
+
+      window._currentSha = sha;
+
+      if (config.enabled) {
+        badge.className = 'status-badge badge-on';
+        badge.textContent = '● 运行中';
+        btnOn.disabled = true;
+        btnOff.disabled = false;
+      } else {
+        badge.className = 'status-badge badge-off';
+        badge.textContent = '● 已关闭';
+        btnOn.disabled = false;
+        btnOff.disabled = true;
+      }
+
+      msgInput.value = config.message || '';
+      var time = new Date().toLocaleString('zh-CN');
+      detail.innerHTML = '网站状态: <span>' + (config.enabled ? '开启' : '关闭') + '</span><br>' +
+        '公告内容: <span>' + (config.message || '无') + '</span><br>' +
+        '查询时间: <span>' + time + '</span>';
+    }
+
+    // ===== 设置开关 =====
+    function setSwitch(enabled) {
+      var msg = document.getElementById('msgInput').value.trim();
+      var btnOn = document.getElementById('btnOn');
+      var btnOff = document.getElementById('btnOff');
+
+      btnOn.disabled = true;
+      btnOff.disabled = true;
+      btnOn.textContent = enabled ? '处理中...' : '开启网站';
+      btnOff.textContent = enabled ? '关闭网站' : '处理中...';
+
+      var config = { enabled: enabled, message: msg };
+      var content = JSON.stringify(config, null, 2);
+      var body = {
+        message: 'Switch ' + (enabled ? 'ON' : 'OFF') + ' via control panel',
+        content: encodeContent(content)
+      };
+      if (window._currentSha) body.sha = window._currentSha;
+
+      apiRequest('PUT', 'switch.json', body).then(function(r) {
+        return r.json();
+      }).then(function(data) {
+        if (data.content) {
+          window._currentSha = data.content.sha;
+          updateUI(config, data.content.sha);
+          toast(enabled ? '网站已开启' : '网站已关闭', 'success');
+        } else {
+          toast(data.message || '操作失败', 'error');
+          loadStatus();
+        }
+      }).catch(function() {
+        toast('网络错误', 'error');
+        loadStatus();
+      });
+    }
+
+    // ===== 初始化 =====
+    (function init() {
+      if (getToken()) {
+        // 已有 Token，直接进入主面板
+        showMainPanel();
+      } else {
+        document.getElementById('tokenInput').focus();
+      }
+    })();
+  </script>
+</body>
+</html>
